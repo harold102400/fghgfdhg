@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todolist</title>
+    <link rel="stylesheet" href="./style/style.css">
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.css">
+    <script src="./src/index.js" defer></script>
+</head>
+<body>
+    <main>
+        <section>
+            <article>
+                <form action="#" class="form">
+                    <input type="text" name="id" hidden id="id">
+
+                    <label for="name">Name</label>
+                    <input type="text" name="name" id="input-task-name">
+
+                    <label for="description">Description</label>
+                    <input type="text" name="description" id="input-task-description">
+                    
+                    <button type="submit" class="submit__btn">Send</button>
+                    <button class="cancel__btn">Cancel</button>
+                </form>
+            </article>
+            <article>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th>Edit/Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody class="todo__table__body">
+                            <!-- <tr>
+                                <td>1</td>
+                                <td>Creating a new project</td>
+                                <td>A TODOlist with JS</td>
+                                <td>Pending</td>
+                                <td>
+                                    <Button>Edit</Button>
+                                    <Button>Delete</Button>
+                                </td>
+                            </tr> -->
+                        </tbody>
+                    </table>
+                    
+                  
+            </article>
+        </section>
+
+    </main>
+    
+</body>
+</html>
