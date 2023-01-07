@@ -1,4 +1,43 @@
 const form = document.querySelector(".form");
+const inputHidden = document.querySelector("#id");
+const createTaskOnForm = async()=>{
+  const data = {
+    name: document.querySelector("#input-task-name").value,
+    username: document.querySelector("#input-task-description").value
+  };
+  await fetch("https://jsonplaceholder.typicode.com/posts", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  }).then(res => res.json())
+  .then(data =>{
+    console.log(data)
+    allTodosTasks.push(data)
+    renderAllTasks(allTodosTasks)
+  })
+}
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const name = document.querySelector("#input-task-name");
+  const description = document.querySelector("#input-task-description");
+  const errorMessage = document.querySelector("#error-message");
+
+  if (name.value === "" || description.value === "") {
+    setTimeout(() => {
+      errorMessage.innerHTML = "";
+    }, 5000);
+    errorMessage.innerText = "Please fill out the form";
+    return;
+  }
+  createTaskOnForm()
+  form.reset();
+
+  /* if(inputHidden.value === ''){
+    addNewTaskToServer(data)
+  } */
+});
 const todoTableBody = document.querySelector(".todo__table__body");
 let allTodosTasks = [];
 
@@ -19,7 +58,7 @@ const setTasksToArray = (task) => {
 };
 //se usa el forEach para buscar dentro del array del json y se usa la funcion render para pasarle la data
 const renderAllTasks = (tasks) => {
-  todoTableBody.innerHTML = '';
+  todoTableBody.innerHTML = "";
   tasks.forEach((task, index) => {
     renderTodo(task, index);
   });
@@ -44,6 +83,9 @@ const renderTodo = (task, index) => {
   const tdEditAndDelete = document.createElement("td");
   const editButton = document.createElement("button");
   editButton.textContent = "Edit";
+  editButton.addEventListener('click', ()=>{
+    updateTodo(task.id)
+  })
   const deleteButton = document.createElement("button");
   deleteButton.textContent = "Delete";
   deleteButton.addEventListener("click", () => {
@@ -57,7 +99,7 @@ const renderTodo = (task, index) => {
   return tr;
 };
 
-const addNewTask = (newtask) => {
+/* const addNewTask = (newtask) => {
   allTodosTasks.push(newtask);
   renderTodo(allTodosTasks);
 };
@@ -72,7 +114,7 @@ const addNewTaskToServer = async (task) => {
   });
   const data = await response.json();
   addNewTask(data);
-};
+}; */
 
 const removeCurrentTask = (index) => {
   /* const removeTask = allTodosTasks.filter((value) =>{
@@ -80,21 +122,25 @@ const removeCurrentTask = (index) => {
     const Trueorfalse = value.id !== id
     return Trueorfalse;
   }) */
-  console.log(index)
+  console.log(index);
   allTodosTasks.splice(index, 1);
-  console.log(index)
+  console.log(index);
   renderAllTasks(allTodosTasks);
 };
 
-const removeFromApi = async (id ,index) => {
+const removeFromApi = async (id, index) => {
   await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
     method: "DELETE",
   });
   removeCurrentTask(index);
 };
 
-/* let newArray = ['hola', 'adios', 'buenas']
-let results = newArray.splice(2, 1)
-console.log(results)
-console.log(newArray)
- */
+const updateTodo = (task) =>{
+  const index = allTodosTasks.filter((todo) => {
+    todo.id === task
+  })
+  console.log(allTodosTasks)
+  allTodosTasks.splice(index, 1 , task);
+  renderAllTasks(allTodosTasks)
+}
+
