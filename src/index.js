@@ -1,25 +1,38 @@
 const form = document.querySelector(".form");
 const inputHidden = document.querySelector("#id");
-const createTaskOnForm = async()=>{
-  const data = {
+const cancelButton = document.querySelector(".cancel__btn");
+cancelButton.addEventListener("click", (e) => {
+  e.preventDefault();
+  form.reset();
+});
+
+const createTaskOnForm = async () => {
+  let data = {
     name: document.querySelector("#input-task-name").value,
-    username: document.querySelector("#input-task-description").value
+    username: document.querySelector("#input-task-description").value,
+    id: document.getElementById("id").value,
   };
-  await fetch("https://jsonplaceholder.typicode.com/posts", {
+  await fetch("https://jsonplaceholder.typicode.com/users", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
-  }).then(res => res.json())
-  .then(data =>{
-    console.log(data)
-    allTodosTasks.push(data)
-    renderAllTasks(allTodosTasks)
   })
-}
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+      allTodosTasks.push(data);
+      renderAllTasks(allTodosTasks);
+    });
+};
 form.addEventListener("submit", (e) => {
   e.preventDefault();
+  const data = {
+    name: document.querySelector("#input-task-name").value,
+    username: document.querySelector("#input-task-description").value,
+    id: parseInt(document.getElementById("id").value),
+  };
   const name = document.querySelector("#input-task-name");
   const description = document.querySelector("#input-task-description");
   const errorMessage = document.querySelector("#error-message");
@@ -31,8 +44,13 @@ form.addEventListener("submit", (e) => {
     errorMessage.innerText = "Please fill out the form";
     return;
   }
-  createTaskOnForm()
-  form.reset();
+  if (inputHidden.value === "") {
+    createTaskOnForm();
+    form.reset();
+  } else {
+    updateTodo(parseInt(inputHidden.value), data);
+    form.reset();
+  }
 
   /* if(inputHidden.value === ''){
     addNewTaskToServer(data)
@@ -83,9 +101,9 @@ const renderTodo = (task, index) => {
   const tdEditAndDelete = document.createElement("td");
   const editButton = document.createElement("button");
   editButton.textContent = "Edit";
-  editButton.addEventListener('click', ()=>{
-    updateTodo(task.id)
-  })
+  editButton.addEventListener("click", () => {
+    setEditTodo(task.id);
+  });
   const deleteButton = document.createElement("button");
   deleteButton.textContent = "Delete";
   deleteButton.addEventListener("click", () => {
@@ -129,18 +147,46 @@ const removeCurrentTask = (index) => {
 };
 
 const removeFromApi = async (id, index) => {
-  await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
+  await fetch(`https://jsonplaceholder.typicode.com/users/${id}`, {
     method: "DELETE",
   });
   removeCurrentTask(index);
 };
 
-const updateTodo = (task) =>{
-  const index = allTodosTasks.filter((todo) => {
-    todo.id === task
-  })
-  console.log(allTodosTasks)
-  allTodosTasks.splice(index, 1 , task);
-  renderAllTasks(allTodosTasks)
-}
+const setEditTodo = (taskId) => {
+  console.log(typeof taskId);
+  const todo = allTodosTasks.find((todo) => {
+    //console.log(todo)
+    return todo.id === parseInt(taskId);
+  });
+  if (!todo) return;
 
+  document.getElementById("input-task-name").value = todo.name;
+  document.getElementById("input-task-description").value = todo.username;
+  document.getElementById("id").value = todo.id;
+};
+
+const updateTodo = async (id, task) => {
+  const data = {
+    name: document.querySelector("#input-task-name").value,
+    username: document.querySelector("#input-task-description").value,
+  };
+  await fetch(`https://jsonplaceholder.typicode.com/users/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  updateTask(id, task);
+};
+
+const updateTask = (id, task) => {
+  const todoIndex = allTodosTasks.findIndex((todo) => {
+    return todo.id === parseInt(id);
+  });
+  if (todoIndex === -1) return;
+
+  allTodosTasks.splice(todoIndex, 1, task);
+  renderAllTasks(allTodosTasks);
+};
